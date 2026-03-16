@@ -50,6 +50,7 @@ app.post("/todo", async (req, res) => {
     const average = total / marks.length;
     const result = subjectResults.includes("FAIL") ? "FAIL" : "PASS";
 
+    console.log("Adding student:", req.body);
     const student = new Student({
       title,
       rollNo,
@@ -62,8 +63,10 @@ app.post("/todo", async (req, res) => {
     });
 
     await student.save();
+    console.log("Student saved!");
     res.status(201).json(student);
   } catch (err) {
+    console.error("POST /todo error:", err);
     res.status(400).json({ message: err.message });
   }
 });

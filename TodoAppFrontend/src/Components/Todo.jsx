@@ -62,12 +62,17 @@ const Todo = () => {
       completed: false,
     };
 
-    await axios.post(`${API_URL}/todo`, data);
-    fetchTodos();
-    setTitle("");
-    setRollNo("");
-    setMarks(["", "", "", "", "", ""]);
-    setError("");
+    try {
+      await axios.post(`${API_URL}/todo`, data);
+      fetchTodos();
+      setTitle("");
+      setRollNo("");
+      setMarks(["", "", "", "", "", ""]);
+      setError("");
+    } catch (err) {
+      console.error("Add Error:", err);
+      alert("Failed to add student. Check console for details.");
+    }
   };
 
   const handleDelete = async (id) => {
