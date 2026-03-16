@@ -1,0 +1,100 @@
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+
+const app = express();
+app.use(express.json());
+app.use(cors());
+
+mongoose
+  .connect("mongodb://127.0.0.1:27017/studentmarks")
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.log("DB Connection Error:", err));
+
+const studentSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  rollNo: { type: String, required: true },
+  marks: {
+    type: [Number],
+    required: true,
+    validate: {
+      validator: (arr) => arr.length === 6 && arr.every((m) => m >= 0 && m <= 100),
+      message: "Each mark must be between 0 and 100 and there must be 6 marks",
+    },
+  },
+  subjectResults: { type: [String], required: true },
+  total: { type: Number, required: true },
+  average: { type: Number, required: true },
+  result: { type: String, enum: ["PASS", "FAIL"], required: true },
+  completed: { type: Boolean, default: false },
+});
+
+const Student = mongoose.model("Student", studentSchema);
+
+app.post("/todo", async (req, res) => {
+  try {
+    const { title, rollNo, marks } = req.body;
+
+    if (!marks || marks.length !== 6) {
+      return res.status(400).json({ message: "Provide 6 marks" });
+    }
+
+    if (marks.some((m) => m < 0 || m > 100)) {
+      return res.status(400).json({ message: "Marks must be between 0 and 100" });
+    }
+
+    const subjectResults = marks.map((m) => (m < 35 ? "FAIL" : "PASS"));
+    const total = marks.reduce((a, b) => a + b, 0);
+    const average = total / marks.length;
+    const result = subjectResults.includes("FAIL") ? "FAIL" : "PASS";
+
+    const student = new Student({
+      title,
+      rollNo,
+      marks,
+      subjectResults,
+      total,
+      average,
+      result,
+      completed: false,
+    });
+
+    await student.save();
+    res.status(201).json(student);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+app.get("/todo", async (req, res) => {
+  try {
+    const students = await Student.find();
+    res.json(students);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.put("/todo/:id", async (req, res) => {
+  try {
+    const updated = await Student.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    res.json(updated);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+app.delete("/todo/:id", async (req, res) => {
+  try {
+    await Student.findByIdAndDelete(req.params.id);
+    res.json({ message: "Deleted" });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+app.listen(3333, () => {
+  console.log("Server running on port 3333");
+});
