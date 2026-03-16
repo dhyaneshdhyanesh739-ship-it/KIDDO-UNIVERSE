@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3333";
+
 const Todo = () => {
   const [todo, setTodo] = useState([]);
   const [title, setTitle] = useState("");
@@ -18,7 +20,7 @@ const Todo = () => {
   ];
 
   const fetchTodos = async () => {
-    const res = await axios.get("http://localhost:3333/todo");
+    const res = await axios.get(`${API_URL}/todo`);
     setTodo(res.data);
   };
 
@@ -60,7 +62,7 @@ const Todo = () => {
       completed: false,
     };
 
-    await axios.post("http://localhost:3333/todo", data);
+    await axios.post(`${API_URL}/todo`, data);
     fetchTodos();
     setTitle("");
     setRollNo("");
@@ -69,12 +71,12 @@ const Todo = () => {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:3333/todo/${id}`);
+    await axios.delete(`${API_URL}/todo/${id}`);
     fetchTodos();
   };
 
   const handleUpdate = async (t) => {
-    await axios.put(`http://localhost:3333/todo/${t._id}`, {
+    await axios.put(`${API_URL}/todo/${t._id}`, {
       completed: !t.completed,
     });
     fetchTodos();

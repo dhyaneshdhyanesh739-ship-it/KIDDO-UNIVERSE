@@ -6,8 +6,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/studentmarks";
+
 mongoose
-  .connect("mongodb://127.0.0.1:27017/studentmarks")
+  .connect(MONGODB_URI)
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.log("DB Connection Error:", err));
 
@@ -95,6 +97,7 @@ app.delete("/todo/:id", async (req, res) => {
   }
 });
 
-app.listen(3333, () => {
-  console.log("Server running on port 3333");
+const PORT = process.env.PORT || 3333;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
