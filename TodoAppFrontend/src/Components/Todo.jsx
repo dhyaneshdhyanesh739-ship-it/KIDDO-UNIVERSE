@@ -187,10 +187,10 @@ const Todo = () => {
     }
   };
 
-  const handleUpdate = async (t) => {
+  const handleUpdate = async (student) => {
     try {
-      await axios.put(`${API_URL}/todo/${t._id}`, {
-        completed: !t.completed,
+      await axios.put(`${API_URL}/todo/${student._id}`, {
+        completed: !student.completed,
         userId,
       });
       fetchTodos();
@@ -199,30 +199,30 @@ const Todo = () => {
     }
   };
 
-  const handleShare = (t) => {
+  const handleShare = (student) => {
     const subjectLines = subjects
       .map((sub, idx) => {
-        const subName = idx === 5 ? (t.electiveSubject === "Biology" ? t("biology") : t("cs")) : sub;
-        return `${subName} = ${t.marks[idx]} (${t.subjectResults[idx] === "PASS" ? t("pass") : t("fail")})`;
+        const subName = idx === 5 ? (student.electiveSubject === "Biology" ? t("biology") : t("cs")) : sub;
+        return `${subName} = ${student.marks[idx]} (${student.subjectResults[idx] === "PASS" ? t("pass") : t("fail")})`;
       })
       .join("\n");
     const text =
       `📋 ${t("reportTitle")}\n` +
       `━━━━━━━━━━━━━━━━━━━━\n` +
-      `👤 ${t("namePlace")}    : ${t.title}\n` +
-      `🔢 ${t("rollPlace")} : ${t.rollNo}\n` +
-      `🎓 ${t("classPlace")}   : ${t.studentClass ?? "-"}\n` +
-      `🔠 ${t("sectionPlace")} : ${t.section ?? "-"}\n` +
-      `🏆 ${t("rank")}    : ${t.rank ?? t("nil")}\n` +
+      `👤 ${t("namePlace")}    : ${student.title}\n` +
+      `🔢 ${t("rollPlace")} : ${student.rollNo}\n` +
+      `🎓 ${t("classPlace")}   : ${student.studentClass ?? "-"}\n` +
+      `🔠 ${t("sectionPlace")} : ${student.section ?? "-"}\n` +
+      `🏆 ${t("rank")}    : ${student.rank ?? t("nil")}\n` +
       `━━━━━━━━━━━━━━━━━━━━\n` +
       `${subjectLines}\n` +
       `━━━━━━━━━━━━━━━━━━━━\n` +
-      `📊 ${t("total")}   : ${t.total}\n` +
-      `📈 ${t("average")} : ${t.average.toFixed(2)}\n` +
-      `✅ ${t("result")}  : ${t.result === "PASS" ? t("pass") : t("fail")}`;
+      `📊 ${t("total")}   : ${student.total}\n` +
+      `📈 ${t("average")} : ${student.average.toFixed(2)}\n` +
+      `✅ ${t("result")}  : ${student.result === "PASS" ? t("pass") : t("fail")}`;
 
     if (navigator.share) {
-      navigator.share({ title: `${t.title}'s ${t("reportTitle")}`, text });
+      navigator.share({ title: `${student.title}'s ${t("reportTitle")}`, text });
     } else {
       navigator.clipboard.writeText(text).then(() => {
         alert(t("copyMsg"));
@@ -231,13 +231,13 @@ const Todo = () => {
   };
 
   const passedStudents = todo
-    .filter((t) => t.result === "PASS")
+    .filter((student) => student.result === "PASS")
     .sort((a, b) => b.total - a.total)
-    .map((t, index) => ({ ...t, rank: index + 1 }));
+    .map((student, index) => ({ ...student, rank: index + 1 }));
 
-  const rankedTodos = todo.map((t) => {
-    const passed = passedStudents.find((p) => p._id === t._id);
-    return { ...t, rank: passed ? passed.rank : null };
+  const rankedTodos = todo.map((student) => {
+    const passed = passedStudents.find((p) => p._id === student._id);
+    return { ...student, rank: passed ? passed.rank : null };
   });
 
   return (
@@ -345,74 +345,74 @@ const Todo = () => {
 
         <div className="part2">
           <div className="todo-container">
-            {rankedTodos.map((t, i) => (
+            {rankedTodos.map((student, i) => (
               <div
-                className={`item ${t.completed ? "finished" : ""}`}
+                className={`item ${student.completed ? "finished" : ""}`}
                 key={i}
               >
-                <h2>{t.title}</h2>
+                <h2>{student.title}</h2>
 
                 <div className="card-meta-row">
                   <span className="meta-badge roll">
-                    <i className="fa-solid fa-id-badge"></i> {t("rollPlace")}: {t.rollNo}
+                    <i className="fa-solid fa-id-badge"></i> {t("rollPlace")}: {student.rollNo}
                   </span>
-                  {t.studentClass && (
+                  {student.studentClass && (
                     <span className="meta-badge class-badge">
-                      <i className="fa-solid fa-graduation-cap"></i> {t("classPlace")} {t.studentClass}
+                      <i className="fa-solid fa-graduation-cap"></i> {t("classPlace")} {student.studentClass}
                     </span>
                   )}
-                  {t.section && (
+                  {student.section && (
                     <span className="meta-badge section-badge">
-                      <i className="fa-solid fa-layer-group"></i> {t("sectionPlace")} {t.section}
+                      <i className="fa-solid fa-layer-group"></i> {t("sectionPlace")} {student.section}
                     </span>
                   )}
                   <span className="meta-badge rank-badge">
-                    <i className="fa-solid fa-trophy"></i> {t("rank")}: {t.rank ?? t("nil")}
+                    <i className="fa-solid fa-trophy"></i> {t("rank")}: {student.rank ?? t("nil")}
                   </span>
                 </div>
 
                 <div className="marks-display">
                   {subjects.map((sub, idx) => {
-                    const subName = idx === 5 ? (t.electiveSubject === "Biology" ? t("biology") : t("cs")) : sub;
+                    const subName = idx === 5 ? (student.electiveSubject === "Biology" ? t("biology") : t("cs")) : sub;
                     return (
                       <p
                         key={idx}
                         style={{
-                          color: t.subjectResults[idx] === "FAIL" ? "red" : "black",
+                          color: student.subjectResults[idx] === "FAIL" ? "red" : "black",
                         }}
                       >
-                        {subName} = {t.marks[idx]} ({t.subjectResults[idx] === "PASS" ? t("pass") : t("fail")})
+                        {subName} = {student.marks[idx]} ({student.subjectResults[idx] === "PASS" ? t("pass") : t("fail")})
                       </p>
                     );
                   })}
                 </div>
 
                 <p>
-                  <b>{t("total")} = {t.total}</b>
+                  <b>{t("total")} = {student.total}</b>
                 </p>
                 <p>
-                  <b>{t("average")} = {t.average.toFixed(2)}</b>
+                  <b>{t("average")} = {student.average.toFixed(2)}</b>
                 </p>
 
                 <p>
                   <b>
                     {t("result")} ={" "}
                     <span
-                      style={{ color: t.result === "FAIL" ? "red" : "green" }}
+                      style={{ color: student.result === "FAIL" ? "red" : "green" }}
                     >
-                      {t.result === "PASS" ? t("pass") : t("fail")}
+                      {student.result === "PASS" ? t("pass") : t("fail")}
                     </span>
                   </b>
                 </p>
 
                 <div className="action">
-                  <button className="com" onClick={() => handleUpdate(t)} title={t("doneTip")}>
+                  <button className="com" onClick={() => handleUpdate(student)} title={t("doneTip")}>
                     <i className="fa-solid fa-check"></i>
                   </button>
-                  <button className="share" onClick={() => handleShare(t)} title={t("shareTip")}>
+                  <button className="share" onClick={() => handleShare(student)} title={t("shareTip")}>
                     <i className="fa-solid fa-share-nodes"></i>
                   </button>
-                  <button className="del" onClick={() => handleDelete(t._id)} title={t("delTip")}>
+                  <button className="del" onClick={() => handleDelete(student._id)} title={t("delTip")}>
                     <i className="fa-solid fa-trash"></i>
                   </button>
                 </div>
