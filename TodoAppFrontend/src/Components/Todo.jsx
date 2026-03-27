@@ -216,19 +216,25 @@ const Todo = () => {
                 key={i}
               >
                 <h2>{t.title}</h2>
-                <p>Roll No: {t.rollNo}</p>
-                {(t.studentClass || t.section) && (
-                  <p>
-                    <b>
-                      {t.studentClass ? `Class: ${t.studentClass}th Std` : ""}
-                      {t.studentClass && t.section ? "  |  " : ""}
-                      {t.section ? `Section: ${t.section}` : ""}
-                    </b>
-                  </p>
-                )}
-                <p>
-                  <b>Rank = {t.rank ?? "NIL"}</b>
-                </p>
+
+                <div className="card-meta-row">
+                  <span className="meta-badge roll">
+                    <i className="fa-solid fa-id-badge"></i> Roll No: {t.rollNo}
+                  </span>
+                  {t.studentClass && (
+                    <span className="meta-badge class-badge">
+                      <i className="fa-solid fa-graduation-cap"></i> Class {t.studentClass}
+                    </span>
+                  )}
+                  {t.section && (
+                    <span className="meta-badge section-badge">
+                      <i className="fa-solid fa-layer-group"></i> Section {t.section}
+                    </span>
+                  )}
+                  <span className="meta-badge rank-badge">
+                    <i className="fa-solid fa-trophy"></i> Rank: {t.rank ?? "NIL"}
+                  </span>
+                </div>
 
                 <div className="marks-display">
                   {subjects.map((sub, idx) => (

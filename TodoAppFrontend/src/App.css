@@ -162,6 +162,44 @@ body {
   font-size: 15px;
 }
 
+.card-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 6px 0 12px 0;
+}
+
+.meta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 13px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.meta-badge.roll {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.meta-badge.class-badge {
+  background: #d0eaff;
+  color: #0057b8;
+}
+
+.meta-badge.section-badge {
+  background: #ead5ff;
+  color: #6a00cc;
+}
+
+.meta-badge.rank-badge {
+  background: #fff3cd;
+  color: #856404;
+}
+
 .action {
   position: absolute;
   bottom: 15px;
