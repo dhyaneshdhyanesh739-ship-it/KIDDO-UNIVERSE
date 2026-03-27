@@ -25,6 +25,34 @@ body {
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
 }
 
+.lang-switcher {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.lang-switcher button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.lang-switcher button.active {
+  background: white;
+  color: #4a55ff;
+}
+
+.lang-switcher button:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
 .logo-container {
   display: flex;
   justify-content: center;

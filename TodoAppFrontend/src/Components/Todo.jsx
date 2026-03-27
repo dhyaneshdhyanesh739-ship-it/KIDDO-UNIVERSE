@@ -4,6 +4,71 @@ import logo from "../assets/logo.jpg";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3333";
 
+const translations = {
+  English: {
+    title: "STUDENT MARKS",
+    namePlace: "Student Name",
+    rollPlace: "Roll No",
+    classPlace: "Class",
+    sectionPlace: "Section",
+    tamil: "Tamil",
+    english: "English",
+    maths: "Maths",
+    physics: "Physics",
+    chemistry: "Chemistry",
+    biology: "Biology",
+    cs: "Computer Science",
+    elective: "Elective",
+    markPlace: "Mark",
+    addBtn: "Add",
+    rank: "Rank",
+    total: "Total",
+    average: "Average",
+    result: "Result",
+    pass: "PASS",
+    fail: "FAIL",
+    nil: "NIL",
+    doneTip: "Mark as Done",
+    shareTip: "Share Details",
+    delTip: "Delete",
+    reportTitle: "Student Report Card",
+    copyMsg: "Student details copied to clipboard!",
+    errorAll: "Enter all marks",
+    errorClass: "Please select Class and Section",
+  },
+  Tamil: {
+    title: "மாணவர் மதிப்பெண்கள்",
+    namePlace: "மாணவர் பெயர்",
+    rollPlace: "வரிசை எண்",
+    classPlace: "வகுப்பு",
+    sectionPlace: "பிரிவு",
+    tamil: "தமிழ்",
+    english: "ஆங்கிலம்",
+    maths: "கணிதம்",
+    physics: "இயற்பியல்",
+    chemistry: "வேதியியல்",
+    biology: "உயிரியல்",
+    cs: "கணினி அறிவியல்",
+    elective: "விருப்பப் பாடம்",
+    markPlace: "மதிப்பெண்",
+    addBtn: "சேர்",
+    rank: "தரம்",
+    total: "மொத்தம்",
+    average: "சராசரி",
+    result: "முடிவு",
+    pass: "தேர்ச்சி",
+    fail: "தோல்வி",
+    nil: "எதுவுமில்லை",
+    doneTip: "முடித்ததாகக் குறிக்கவும்",
+    shareTip: "பகிரவும்",
+    delTip: "நீக்கு",
+    reportTitle: "மாணவர் அறிக்கை அட்டை",
+    copyMsg: "மாணவர் விவரங்கள் நகலெடுக்கப்பட்டன!",
+    errorAll: "அனைத்து மதிப்பெண்களையும் உள்ளிடவும்",
+    errorClass: "வகுப்பு மற்றும் பிரிவைத் தேர்ந்தெடுக்கவும்",
+  },
+};
+
 const Todo = () => {
   const [todo, setTodo] = useState([]);
   const [title, setTitle] = useState("");
@@ -13,6 +78,15 @@ const Todo = () => {
   const [electiveSubject, setElectiveSubject] = useState("Biology");
   const [marks, setMarks] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
+
+  const [lang, setLang] = useState(() => localStorage.getItem("todo_lang") || "English");
+
+  const t = (key) => translations[lang][key] || key;
+
+  const handleLangChange = (newLang) => {
+    setLang(newLang);
+    localStorage.setItem("todo_lang", newLang);
+  };
 
   const [userId] = useState(() => {
     let id = localStorage.getItem("todo_user_id");
@@ -24,12 +98,12 @@ const Todo = () => {
   });
 
   const subjects = [
-    "Tamil",
-    "English",
-    "Maths",
-    "Physics",
-    "Chemistry",
-    "Elective",
+    t("tamil"),
+    t("english"),
+    t("maths"),
+    t("physics"),
+    t("chemistry"),
+    t("elective"),
   ];
 
   const fetchTodos = async () => {
@@ -60,7 +134,7 @@ const Todo = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (marks.some((m) => m === "")) {
-      setError("Enter all marks");
+      setError(t("errorAll"));
       return;
     }
     const total = marks.reduce((a, b) => a + b, 0);
@@ -69,7 +143,7 @@ const Todo = () => {
     const overallResult = subjectResults.includes("FAIL") ? "FAIL" : "PASS";
 
     if (!studentClass || !section) {
-      setError("Please select Class and Section");
+      setError(t("errorClass"));
       return;
     }
 
@@ -128,30 +202,30 @@ const Todo = () => {
   const handleShare = (t) => {
     const subjectLines = subjects
       .map((sub, idx) => {
-        const subName = idx === 5 ? t.electiveSubject : sub;
-        return `${subName} = ${t.marks[idx]} (${t.subjectResults[idx]})`;
+        const subName = idx === 5 ? (t.electiveSubject === "Biology" ? t("biology") : t("cs")) : sub;
+        return `${subName} = ${t.marks[idx]} (${t.subjectResults[idx] === "PASS" ? t("pass") : t("fail")})`;
       })
       .join("\n");
     const text =
-      `📋 Student Report Card\n` +
+      `📋 ${t("reportTitle")}\n` +
       `━━━━━━━━━━━━━━━━━━━━\n` +
-      `👤 Name    : ${t.title}\n` +
-      `🔢 Roll No : ${t.rollNo}\n` +
-      `🎓 Class   : ${t.studentClass ?? "-"}\n` +
-      `🔠 Section : ${t.section ?? "-"}\n` +
-      `🏆 Rank    : ${t.rank ?? "NIL"}\n` +
+      `👤 ${t("namePlace")}    : ${t.title}\n` +
+      `🔢 ${t("rollPlace")} : ${t.rollNo}\n` +
+      `🎓 ${t("classPlace")}   : ${t.studentClass ?? "-"}\n` +
+      `🔠 ${t("sectionPlace")} : ${t.section ?? "-"}\n` +
+      `🏆 ${t("rank")}    : ${t.rank ?? t("nil")}\n` +
       `━━━━━━━━━━━━━━━━━━━━\n` +
       `${subjectLines}\n` +
       `━━━━━━━━━━━━━━━━━━━━\n` +
-      `📊 Total   : ${t.total}\n` +
-      `📈 Average : ${t.average.toFixed(2)}\n` +
-      `✅ Result  : ${t.result}`;
+      `📊 ${t("total")}   : ${t.total}\n` +
+      `📈 ${t("average")} : ${t.average.toFixed(2)}\n` +
+      `✅ ${t("result")}  : ${t.result === "PASS" ? t("pass") : t("fail")}`;
 
     if (navigator.share) {
-      navigator.share({ title: `${t.title}'s Report Card`, text });
+      navigator.share({ title: `${t.title}'s ${t("reportTitle")}`, text });
     } else {
       navigator.clipboard.writeText(text).then(() => {
-        alert("Student details copied to clipboard!");
+        alert(t("copyMsg"));
       });
     }
   };
@@ -174,15 +248,25 @@ const Todo = () => {
       />
       <div className="todo">
         <div className="part1">
+          <div className="lang-switcher">
+            <button 
+              className={lang === "English" ? "active" : ""} 
+              onClick={() => handleLangChange("English")}
+            >EN</button>
+            <button 
+              className={lang === "Tamil" ? "active" : ""} 
+              onClick={() => handleLangChange("Tamil")}
+            >தமிழ்</button>
+          </div>
           <form onSubmit={handleSubmit}>
             <div className="logo-container">
               <img src={logo} alt="Kiddo Logo" className="logo" />
             </div>
-            <h1>STUDENT MARKS</h1>
+            <h1>{t("title")}</h1>
 
             <input
               type="text"
-              placeholder="Student Name"
+              placeholder={t("namePlace")}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
@@ -190,7 +274,7 @@ const Todo = () => {
 
             <input
               type="text"
-              placeholder="Roll No"
+              placeholder={t("rollPlace")}
               value={rollNo}
               onChange={(e) => setRollNo(e.target.value)}
               required
@@ -202,7 +286,7 @@ const Todo = () => {
                 onChange={(e) => setStudentClass(e.target.value)}
                 required
               >
-                <option value="" disabled>Class</option>
+                <option value="" disabled>{t("classPlace")}</option>
                 {[1,2,3,4,5,6,7,8,9,10,11,12].map((c) => (
                   <option key={c} value={c}>{c}th Std</option>
                 ))}
@@ -213,9 +297,9 @@ const Todo = () => {
                 onChange={(e) => setSection(e.target.value)}
                 required
               >
-                <option value="" disabled>Section</option>
+                <option value="" disabled>{t("sectionPlace")}</option>
                 {["A1","A2","A3","A4","B1","B2","B3","C1","C2","C3","D1","D2","D3"].map((s) => (
-                  <option key={s} value={s}>Section {s}</option>
+                  <option key={s} value={s}>{t("sectionPlace")} {s}</option>
                 ))}
               </select>
             </div>
@@ -238,12 +322,12 @@ const Todo = () => {
                   onChange={(e) => setElectiveSubject(e.target.value)}
                   required
                 >
-                  <option value="Biology">Biology</option>
-                  <option value="Computer Science">Computer Science</option>
+                  <option value="Biology">{t("biology")}</option>
+                  <option value="Computer Science">{t("cs")}</option>
                 </select>
                 <input
                   type="number"
-                  placeholder="Mark"
+                  placeholder={t("markPlace")}
                   value={marks[5]}
                   onChange={(e) => handleMarkChange(5, e.target.value)}
                   required
@@ -254,7 +338,7 @@ const Todo = () => {
             {error && <p style={{ color: "red" }}>{error}</p>}
 
             <button type="submit">
-              <i className="fa-solid fa-plus"></i> Add
+              <i className="fa-solid fa-plus"></i> {t("addBtn")}
             </button>
           </form>
         </div>
@@ -270,26 +354,26 @@ const Todo = () => {
 
                 <div className="card-meta-row">
                   <span className="meta-badge roll">
-                    <i className="fa-solid fa-id-badge"></i> Roll No: {t.rollNo}
+                    <i className="fa-solid fa-id-badge"></i> {t("rollPlace")}: {t.rollNo}
                   </span>
                   {t.studentClass && (
                     <span className="meta-badge class-badge">
-                      <i className="fa-solid fa-graduation-cap"></i> Class {t.studentClass}
+                      <i className="fa-solid fa-graduation-cap"></i> {t("classPlace")} {t.studentClass}
                     </span>
                   )}
                   {t.section && (
                     <span className="meta-badge section-badge">
-                      <i className="fa-solid fa-layer-group"></i> Section {t.section}
+                      <i className="fa-solid fa-layer-group"></i> {t("sectionPlace")} {t.section}
                     </span>
                   )}
                   <span className="meta-badge rank-badge">
-                    <i className="fa-solid fa-trophy"></i> Rank: {t.rank ?? "NIL"}
+                    <i className="fa-solid fa-trophy"></i> {t("rank")}: {t.rank ?? t("nil")}
                   </span>
                 </div>
 
                 <div className="marks-display">
                   {subjects.map((sub, idx) => {
-                    const subName = idx === 5 ? (t.electiveSubject || "Biology / Computer Science") : sub;
+                    const subName = idx === 5 ? (t.electiveSubject === "Biology" ? t("biology") : t("cs")) : sub;
                     return (
                       <p
                         key={idx}
@@ -297,38 +381,38 @@ const Todo = () => {
                           color: t.subjectResults[idx] === "FAIL" ? "red" : "black",
                         }}
                       >
-                        {subName} = {t.marks[idx]} ({t.subjectResults[idx]})
+                        {subName} = {t.marks[idx]} ({t.subjectResults[idx] === "PASS" ? t("pass") : t("fail")})
                       </p>
                     );
                   })}
                 </div>
 
                 <p>
-                  <b>Total = {t.total}</b>
+                  <b>{t("total")} = {t.total}</b>
                 </p>
                 <p>
-                  <b>Average = {t.average.toFixed(2)}</b>
+                  <b>{t("average")} = {t.average.toFixed(2)}</b>
                 </p>
 
                 <p>
                   <b>
-                    Result ={" "}
+                    {t("result")} ={" "}
                     <span
                       style={{ color: t.result === "FAIL" ? "red" : "green" }}
                     >
-                      {t.result}
+                      {t.result === "PASS" ? t("pass") : t("fail")}
                     </span>
                   </b>
                 </p>
 
                 <div className="action">
-                  <button className="com" onClick={() => handleUpdate(t)} title="Mark as Done">
+                  <button className="com" onClick={() => handleUpdate(t)} title={t("doneTip")}>
                     <i className="fa-solid fa-check"></i>
                   </button>
-                  <button className="share" onClick={() => handleShare(t)} title="Share Details">
+                  <button className="share" onClick={() => handleShare(t)} title={t("shareTip")}>
                     <i className="fa-solid fa-share-nodes"></i>
                   </button>
-                  <button className="del" onClick={() => handleDelete(t._id)} title="Delete">
+                  <button className="del" onClick={() => handleDelete(t._id)} title={t("delTip")}>
                     <i className="fa-solid fa-trash"></i>
                   </button>
                 </div>
