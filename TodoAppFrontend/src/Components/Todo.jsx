@@ -12,6 +12,15 @@ const Todo = () => {
   const [marks, setMarks] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
 
+  const [userId] = useState(() => {
+    let id = localStorage.getItem("todo_user_id");
+    if (!id) {
+      id = "user_" + Math.random().toString(36).substring(2, 11);
+      localStorage.setItem("todo_user_id", id);
+    }
+    return id;
+  });
+
   const subjects = [
     "Tamil",
     "English",
@@ -22,8 +31,12 @@ const Todo = () => {
   ];
 
   const fetchTodos = async () => {
-    const res = await axios.get(`${API_URL}/todo`);
-    setTodo(res.data);
+    try {
+      const res = await axios.get(`${API_URL}/todo`, { params: { userId } });
+      setTodo(res.data);
+    } catch (err) {
+      console.error("Fetch Error:", err);
+    }
   };
 
   useEffect(() => {
@@ -63,6 +76,7 @@ const Todo = () => {
       rollNo,
       studentClass,
       section,
+      userId,
       marks,
       total,
       average,
@@ -87,15 +101,24 @@ const Todo = () => {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`${API_URL}/todo/${id}`);
-    fetchTodos();
+    try {
+      await axios.delete(`${API_URL}/todo/${id}`, { params: { userId } });
+      fetchTodos();
+    } catch (err) {
+      console.error("Delete Error:", err);
+    }
   };
 
   const handleUpdate = async (t) => {
-    await axios.put(`${API_URL}/todo/${t._id}`, {
-      completed: !t.completed,
-    });
-    fetchTodos();
+    try {
+      await axios.put(`${API_URL}/todo/${t._id}`, {
+        completed: !t.completed,
+        userId,
+      });
+      fetchTodos();
+    } catch (err) {
+      console.error("Update Error:", err);
+    }
   };
 
   const handleShare = (t) => {

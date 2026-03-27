@@ -36,6 +36,7 @@ const studentSchema = new mongoose.Schema({
   rollNo: { type: String, required: true },
   studentClass: { type: String, default: "" },
   section: { type: String, default: "" },
+  userId: { type: String, required: true },
   marks: {
     type: [Number],
     required: true,
@@ -55,7 +56,11 @@ const Student = mongoose.model("Student", studentSchema);
 
 app.post("/todo", async (req, res) => {
   try {
-    const { title, rollNo, studentClass, section, marks } = req.body;
+    const { title, rollNo, studentClass, section, userId, marks } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ message: "UserId is required" });
+    }
 
     if (!marks || marks.length !== 6) {
       return res.status(400).json({ message: "Provide 6 marks" });
@@ -76,6 +81,7 @@ app.post("/todo", async (req, res) => {
       rollNo,
       studentClass: studentClass || "",
       section: section || "",
+      userId,
       marks,
       subjectResults,
       total,
@@ -95,7 +101,11 @@ app.post("/todo", async (req, res) => {
 
 app.get("/todo", async (req, res) => {
   try {
-    const students = await Student.find();
+    const { userId } = req.query;
+    if (!userId) {
+      return res.status(400).json({ message: "UserId query parameter is required" });
+    }
+    const students = await Student.find({ userId });
     res.json(students);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -104,9 +114,20 @@ app.get("/todo", async (req, res) => {
 
 app.put("/todo/:id", async (req, res) => {
   try {
-    const updated = await Student.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
+    const { userId } = req.body;
+    if (!userId) {
+      return res.status(400).json({ message: "UserId is required for updates" });
+    }
+
+    const updated = await Student.findOneAndUpdate(
+      { _id: req.params.id, userId },
+      req.body,
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Student record not found or unauthorized" });
+    }
     res.json(updated);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -115,7 +136,15 @@ app.put("/todo/:id", async (req, res) => {
 
 app.delete("/todo/:id", async (req, res) => {
   try {
-    await Student.findByIdAndDelete(req.params.id);
+    const { userId } = req.query;
+    if (!userId) {
+      return res.status(400).json({ message: "UserId query parameter is required for deletion" });
+    }
+
+    const deleted = await Student.findOneAndDelete({ _id: req.params.id, userId });
+    if (!deleted) {
+      return res.status(404).json({ message: "Student record not found or unauthorized" });
+    }
     res.json({ message: "Deleted" });
   } catch (err) {
     res.status(400).json({ message: err.message });
