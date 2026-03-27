@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import logo from "../assets/logo.jpg";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3333";
 
@@ -168,6 +169,9 @@ const Todo = () => {
       <div className="todo">
         <div className="part1">
           <form onSubmit={handleSubmit}>
+            <div className="logo-container">
+              <img src={logo} alt="Kiddo Logo" className="logo" />
+            </div>
             <h1>STUDENT MARKS</h1>
 
             <input
