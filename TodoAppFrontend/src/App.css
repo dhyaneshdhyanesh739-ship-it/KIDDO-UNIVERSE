@@ -83,6 +83,27 @@ body {
   outline: none;
 }
 
+.elective-row {
+  display: flex;
+  gap: 10px;
+}
+
+.elective-select {
+  flex: 1.5;
+  padding: 10px 15px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  font-weight: bold;
+  outline: none;
+  background: white;
+  cursor: pointer;
+}
+
+.elective-row input {
+  flex: 1;
+}
+
 .marks input::placeholder {
   color: #444;
 }

@@ -10,6 +10,7 @@ const Todo = () => {
   const [rollNo, setRollNo] = useState("");
   const [studentClass, setStudentClass] = useState("");
   const [section, setSection] = useState("");
+  const [electiveSubject, setElectiveSubject] = useState("Biology");
   const [marks, setMarks] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
 
@@ -28,7 +29,7 @@ const Todo = () => {
     "Maths",
     "Physics",
     "Chemistry",
-    "Biology / Computer Science",
+    "Elective",
   ];
 
   const fetchTodos = async () => {
@@ -78,6 +79,7 @@ const Todo = () => {
       studentClass,
       section,
       userId,
+      electiveSubject,
       marks,
       total,
       average,
@@ -93,6 +95,7 @@ const Todo = () => {
       setRollNo("");
       setStudentClass("");
       setSection("");
+      setElectiveSubject("Biology");
       setMarks(["", "", "", "", "", ""]);
       setError("");
     } catch (err) {
@@ -124,7 +127,10 @@ const Todo = () => {
 
   const handleShare = (t) => {
     const subjectLines = subjects
-      .map((sub, idx) => `${sub} = ${t.marks[idx]} (${t.subjectResults[idx]})`)
+      .map((sub, idx) => {
+        const subName = idx === 5 ? t.electiveSubject : sub;
+        return `${subName} = ${t.marks[idx]} (${t.subjectResults[idx]})`;
+      })
       .join("\n");
     const text =
       `📋 Student Report Card\n` +
@@ -215,7 +221,7 @@ const Todo = () => {
             </div>
 
             <div className="marks">
-              {subjects.map((sub, i) => (
+              {subjects.slice(0, 5).map((sub, i) => (
                 <input
                   key={i}
                   type="number"
@@ -225,6 +231,24 @@ const Todo = () => {
                   required
                 />
               ))}
+              <div className="elective-row">
+                <select
+                  className="elective-select"
+                  value={electiveSubject}
+                  onChange={(e) => setElectiveSubject(e.target.value)}
+                  required
+                >
+                  <option value="Biology">Biology</option>
+                  <option value="Computer Science">Computer Science</option>
+                </select>
+                <input
+                  type="number"
+                  placeholder="Mark"
+                  value={marks[5]}
+                  onChange={(e) => handleMarkChange(5, e.target.value)}
+                  required
+                />
+              </div>
             </div>
 
             {error && <p style={{ color: "red" }}>{error}</p>}
@@ -264,16 +288,19 @@ const Todo = () => {
                 </div>
 
                 <div className="marks-display">
-                  {subjects.map((sub, idx) => (
-                    <p
-                      key={idx}
-                      style={{
-                        color: t.subjectResults[idx] === "FAIL" ? "red" : "black",
-                      }}
-                    >
-                      {sub} = {t.marks[idx]} ({t.subjectResults[idx]})
-                    </p>
-                  ))}
+                  {subjects.map((sub, idx) => {
+                    const subName = idx === 5 ? (t.electiveSubject || "Biology / Computer Science") : sub;
+                    return (
+                      <p
+                        key={idx}
+                        style={{
+                          color: t.subjectResults[idx] === "FAIL" ? "red" : "black",
+                        }}
+                      >
+                        {subName} = {t.marks[idx]} ({t.subjectResults[idx]})
+                      </p>
+                    );
+                  })}
                 </div>
 
                 <p>

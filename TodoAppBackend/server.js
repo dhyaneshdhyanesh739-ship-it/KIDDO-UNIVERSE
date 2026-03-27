@@ -37,6 +37,7 @@ const studentSchema = new mongoose.Schema({
   studentClass: { type: String, default: "" },
   section: { type: String, default: "" },
   userId: { type: String, required: true },
+  electiveSubject: { type: String, enum: ["Biology", "Computer Science"], default: "Biology" },
   marks: {
     type: [Number],
     required: true,
@@ -56,7 +57,7 @@ const Student = mongoose.model("Student", studentSchema);
 
 app.post("/todo", async (req, res) => {
   try {
-    const { title, rollNo, studentClass, section, userId, marks } = req.body;
+    const { title, rollNo, studentClass, section, userId, electiveSubject, marks } = req.body;
 
     if (!userId) {
       return res.status(400).json({ message: "UserId is required" });
@@ -82,6 +83,7 @@ app.post("/todo", async (req, res) => {
       studentClass: studentClass || "",
       section: section || "",
       userId,
+      electiveSubject: electiveSubject || "Biology",
       marks,
       subjectResults,
       total,
