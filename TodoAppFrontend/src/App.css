@@ -151,11 +151,25 @@ body {
 
 .action .com {
   background: #8dff9e;
+  color: #006b1b;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.action .share {
+  background: #4facfe;
+  color: #003c7a;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .action .del {
   background: #ff8a8a;
   color: red;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.action button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
 }
 
 @media (max-width: 500px) {

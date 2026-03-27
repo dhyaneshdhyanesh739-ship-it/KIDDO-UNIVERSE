@@ -87,6 +87,32 @@ const Todo = () => {
     fetchTodos();
   };
 
+  const handleShare = (t) => {
+    const subjectLines = subjects
+      .map((sub, idx) => `${sub} = ${t.marks[idx]} (${t.subjectResults[idx]})`)
+      .join("\n");
+    const text =
+      `📋 Student Report Card\n` +
+      `━━━━━━━━━━━━━━━━━━━━\n` +
+      `👤 Name    : ${t.title}\n` +
+      `🔢 Roll No : ${t.rollNo}\n` +
+      `🏆 Rank    : ${t.rank ?? "NIL"}\n` +
+      `━━━━━━━━━━━━━━━━━━━━\n` +
+      `${subjectLines}\n` +
+      `━━━━━━━━━━━━━━━━━━━━\n` +
+      `📊 Total   : ${t.total}\n` +
+      `📈 Average : ${t.average.toFixed(2)}\n` +
+      `✅ Result  : ${t.result}`;
+
+    if (navigator.share) {
+      navigator.share({ title: `${t.title}'s Report Card`, text });
+    } else {
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Student details copied to clipboard!");
+      });
+    }
+  };
+
   const passedStudents = todo
     .filter((t) => t.result === "PASS")
     .sort((a, b) => b.total - a.total)
@@ -190,10 +216,13 @@ const Todo = () => {
                 </p>
 
                 <div className="action">
-                  <button className="com" onClick={() => handleUpdate(t)}>
+                  <button className="com" onClick={() => handleUpdate(t)} title="Mark as Done">
                     <i className="fa-solid fa-check"></i>
                   </button>
-                  <button className="del" onClick={() => handleDelete(t._id)}>
+                  <button className="share" onClick={() => handleShare(t)} title="Share Details">
+                    <i className="fa-solid fa-share-nodes"></i>
+                  </button>
+                  <button className="del" onClick={() => handleDelete(t._id)} title="Delete">
                     <i className="fa-solid fa-trash"></i>
                   </button>
                 </div>

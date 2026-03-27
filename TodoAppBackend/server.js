@@ -4,7 +4,25 @@ import cors from "cors";
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+
+// Allow frontend origin — set CORS_ORIGIN env var on Render to your frontend URL
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
+  : [];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g. mobile apps, curl, Render health checks)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      callback(new Error(`CORS blocked: ${origin}`));
+    },
+    credentials: true,
+  })
+);
 
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/studentmarks";
 
