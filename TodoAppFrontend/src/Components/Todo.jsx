@@ -7,6 +7,8 @@ const Todo = () => {
   const [todo, setTodo] = useState([]);
   const [title, setTitle] = useState("");
   const [rollNo, setRollNo] = useState("");
+  const [studentClass, setStudentClass] = useState("");
+  const [section, setSection] = useState("");
   const [marks, setMarks] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
 
@@ -51,9 +53,16 @@ const Todo = () => {
     const subjectResults = marks.map((m) => (m < 35 ? "FAIL" : "PASS"));
     const overallResult = subjectResults.includes("FAIL") ? "FAIL" : "PASS";
 
+    if (!studentClass || !section) {
+      setError("Please select Class and Section");
+      return;
+    }
+
     const data = {
       title,
       rollNo,
+      studentClass,
+      section,
       marks,
       total,
       average,
@@ -67,6 +76,8 @@ const Todo = () => {
       fetchTodos();
       setTitle("");
       setRollNo("");
+      setStudentClass("");
+      setSection("");
       setMarks(["", "", "", "", "", ""]);
       setError("");
     } catch (err) {
@@ -96,6 +107,8 @@ const Todo = () => {
       `━━━━━━━━━━━━━━━━━━━━\n` +
       `👤 Name    : ${t.title}\n` +
       `🔢 Roll No : ${t.rollNo}\n` +
+      `🎓 Class   : ${t.studentClass ?? "-"}\n` +
+      `🔠 Section : ${t.section ?? "-"}\n` +
       `🏆 Rank    : ${t.rank ?? "NIL"}\n` +
       `━━━━━━━━━━━━━━━━━━━━\n` +
       `${subjectLines}\n` +
@@ -150,6 +163,30 @@ const Todo = () => {
               required
             />
 
+            <div className="class-section-row">
+              <select
+                value={studentClass}
+                onChange={(e) => setStudentClass(e.target.value)}
+                required
+              >
+                <option value="" disabled>Class</option>
+                {[1,2,3,4,5,6,7,8,9,10,11,12].map((c) => (
+                  <option key={c} value={c}>{c}th Std</option>
+                ))}
+              </select>
+
+              <select
+                value={section}
+                onChange={(e) => setSection(e.target.value)}
+                required
+              >
+                <option value="" disabled>Section</option>
+                {["A","B","C","D","E","F"].map((s) => (
+                  <option key={s} value={s}>Section {s}</option>
+                ))}
+              </select>
+            </div>
+
             <div className="marks">
               {subjects.map((sub, i) => (
                 <input
@@ -180,6 +217,15 @@ const Todo = () => {
               >
                 <h2>{t.title}</h2>
                 <p>Roll No: {t.rollNo}</p>
+                {(t.studentClass || t.section) && (
+                  <p>
+                    <b>
+                      {t.studentClass ? `Class: ${t.studentClass}th Std` : ""}
+                      {t.studentClass && t.section ? "  |  " : ""}
+                      {t.section ? `Section: ${t.section}` : ""}
+                    </b>
+                  </p>
+                )}
                 <p>
                   <b>Rank = {t.rank ?? "NIL"}</b>
                 </p>

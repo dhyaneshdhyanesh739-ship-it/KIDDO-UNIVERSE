@@ -34,6 +34,8 @@ mongoose
 const studentSchema = new mongoose.Schema({
   title: { type: String, required: true },
   rollNo: { type: String, required: true },
+  studentClass: { type: String, default: "" },
+  section: { type: String, default: "" },
   marks: {
     type: [Number],
     required: true,
@@ -53,7 +55,7 @@ const Student = mongoose.model("Student", studentSchema);
 
 app.post("/todo", async (req, res) => {
   try {
-    const { title, rollNo, marks } = req.body;
+    const { title, rollNo, studentClass, section, marks } = req.body;
 
     if (!marks || marks.length !== 6) {
       return res.status(400).json({ message: "Provide 6 marks" });
@@ -72,6 +74,8 @@ app.post("/todo", async (req, res) => {
     const student = new Student({
       title,
       rollNo,
+      studentClass: studentClass || "",
+      section: section || "",
       marks,
       subjectResults,
       total,
