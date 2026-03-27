@@ -214,7 +214,7 @@ const Todo = () => {
                 required
               >
                 <option value="" disabled>Section</option>
-                {["A","B","C","D","E","F"].map((s) => (
+                {["A1","A2","A3","A4","B1","B2","B3","C1","C2","C3","D1","D2","D3"].map((s) => (
                   <option key={s} value={s}>Section {s}</option>
                 ))}
               </select>
